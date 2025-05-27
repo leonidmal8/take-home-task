@@ -30,7 +30,7 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
           
       - name: Run ShellCheck (SAST for shell scripts)
-        uses: azohra/shellcheck-action@v0.7.0
+        uses: azohra/shellcheck-action@v0.8.0
 
       - name: Run tfsec (SAST for Terraform)
         uses: aquasecurity/tfsec-action@v1.0.3
