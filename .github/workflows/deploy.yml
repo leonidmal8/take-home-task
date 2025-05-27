@@ -29,6 +29,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: Run ShellCheck (SAST for shell scripts)
+        uses: ludeeus/action-shellcheck@v2
+        with:
+          scandir: .
+
+      - name: Run tfsec (SAST for Terraform)
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: .
+
       - name: Make deploy.sh executable
         run: chmod +x ./deploy.sh
 
