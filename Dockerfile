@@ -2,7 +2,8 @@
 FROM nginx:alpine
 
 # Create a simple HTML page
-RUN echo '<!DOCTYPE html>
+RUN cat << 'EOF' > /usr/share/nginx/html/index.html
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -65,7 +66,8 @@ RUN echo '<!DOCTYPE html>
         </footer>
     </div>
 </body>
-</html>' > /usr/share/nginx/html/index.html
+</html>
+EOF
 
 # Expose port 80
 EXPOSE 80
