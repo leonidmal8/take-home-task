@@ -1,0 +1,163 @@
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="aws-orange" patternUnits="userSpaceOnUse" width="4" height="4">
+      <rect width="4" height="4" fill="#FF9900"/>
+    </pattern>
+    <linearGradient id="vpc-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8F4FD;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D1E7DD;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="public-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF3CD;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FCF8E3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="private-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F8D7DA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FDE2E4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- AWS Cloud Background -->
+  <rect x="20" y="20" width="1160" height="760" fill="#F0F8FF" stroke="#FF9900" stroke-width="3" rx="10"/>
+  <text x="40" y="50" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#232F3E">AWS Cloud</text>
+  
+  <!-- VPC Container -->
+  <rect x="50" y="80" width="1100" height="680" fill="url(#vpc-gradient)" stroke="#0073E6" stroke-width="2" rx="8"/>
+  <text x="70" y="110" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#0073E6">VPC (10.0.0.0/16)</text>
+  
+  <!-- Internet Gateway -->
+  <rect x="520" y="130" width="160" height="40" fill="#4CAF50" stroke="#2E7D32" stroke-width="2" rx="5"/>
+  <text x="580" y="155" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Internet Gateway</text>
+  
+  <!-- Public Subnets -->
+  <g id="public-subnets">
+    <!-- AZ 1 Public -->
+    <rect x="200" y="200" width="300" height="120" fill="url(#public-gradient)" stroke="#FFC107" stroke-width="2" rx="5"/>
+    <text x="210" y="225" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#8B4513">Public Subnet 1 (AZ-1a)</text>
+    <text x="210" y="245" font-family="Arial, sans-serif" font-size="12" fill="#8B4513">10.0.1.0/24</text>
+    
+    <!-- ALB in Public Subnet 1 -->
+    <rect x="220" y="260" width="120" height="40" fill="#FF5722" stroke="#D32F2F" stroke-width="1" rx="3"/>
+    <text x="280" y="285" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">Load Balancer</text>
+    
+    <!-- AZ 2 Public -->
+    <rect x="700" y="200" width="300" height="120" fill="url(#public-gradient)" stroke="#FFC107" stroke-width="2" rx="5"/>
+    <text x="710" y="225" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#8B4513">Public Subnet 2 (AZ-1b)</text>
+    <text x="710" y="245" font-family="Arial, sans-serif" font-size="12" fill="#8B4513">10.0.2.0/24</text>
+    
+    <!-- ALB in Public Subnet 2 -->
+    <rect x="720" y="260" width="120" height="40" fill="#FF5722" stroke="#D32F2F" stroke-width="1" rx="3"/>
+    <text x="780" y="285" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">Load Balancer</text>
+  </g>
+  
+  <!-- Private Subnets -->
+  <g id="private-subnets">
+    <!-- AZ 1 Private -->
+    <rect x="200" y="360" width="300" height="200" fill="url(#private-gradient)" stroke="#DC3545" stroke-width="2" rx="5"/>
+    <text x="210" y="385" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#8B0000">Private Subnet 1 (AZ-1a)</text>
+    <text x="210" y="405" font-family="Arial, sans-serif" font-size="12" fill="#8B0000">10.0.10.0/24</text>
+    
+    <!-- ECS Task in Private Subnet 1 -->
+    <rect x="220" y="420" width="100" height="60" fill="#9C27B0" stroke="#7B1FA2" stroke-width="1" rx="3"/>
+    <text x="270" y="445" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">ECS Task</text>
+    <text x="270" y="460" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle">Fargate</text>
+    <text x="270" y="475" font-family="Arial, sans-serif" font-size="8" fill="white" text-anchor="middle">Container</text>
+    
+    <!-- VPC Endpoints in Private Subnet 1 -->
+    <rect x="340" y="420" width="140" height="120" fill="#607D8B" stroke="#455A64" stroke-width="1" rx="3"/>
+    <text x="410" y="440" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">VPC Endpoints</text>
+    <text x="350" y="460" font-family="Arial, sans-serif" font-size="8" fill="white">• ECR API</text>
+    <text x="350" y="475" font-family="Arial, sans-serif" font-size="8" fill="white">• ECR DKR</text>
+    <text x="350" y="490" font-family="Arial, sans-serif" font-size="8" fill="white">• CloudWatch Logs</text>
+    <text x="350" y="505" font-family="Arial, sans-serif" font-size="8" fill="white">• ECS</text>
+    <text x="350" y="520" font-family="Arial, sans-serif" font-size="8" fill="white">• ECS Agent</text>
+    <text x="350" y="535" font-family="Arial, sans-serif" font-size="8" fill="white">• S3 Gateway</text>
+    
+    <!-- AZ 2 Private -->
+    <rect x="700" y="360" width="300" height="200" fill="url(#private-gradient)" stroke="#DC3545" stroke-width="2" rx="5"/>
+    <text x="710" y="385" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#8B0000">Private Subnet 2 (AZ-1b)</text>
+    <text x="710" y="405" font-family="Arial, sans-serif" font-size="12" fill="#8B0000">10.0.11.0/24</text>
+    
+    <!-- ECS Task in Private Subnet 2 -->
+    <rect x="720" y="420" width="100" height="60" fill="#9C27B0" stroke="#7B1FA2" stroke-width="1" rx="3"/>
+    <text x="770" y="445" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">ECS Task</text>
+    <text x="770" y="460" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle">Fargate</text>
+    <text x="770" y="475" font-family="Arial, sans-serif" font-size="8" fill="white" text-anchor="middle">Container</text>
+    
+    <!-- VPC Endpoints in Private Subnet 2 -->
+    <rect x="840" y="420" width="140" height="120" fill="#607D8B" stroke="#455A64" stroke-width="1" rx="3"/>
+    <text x="910" y="440" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">VPC Endpoints</text>
+    <text x="850" y="460" font-family="Arial, sans-serif" font-size="8" fill="white">• ECR API</text>
+    <text x="850" y="475" font-family="Arial, sans-serif" font-size="8" fill="white">• ECR DKR</text>
+    <text x="850" y="490" font-family="Arial, sans-serif" font-size="8" fill="white">• CloudWatch Logs</text>
+    <text x="850" y="505" font-family="Arial, sans-serif" font-size="8" fill="white">• ECS</text>
+    <text x="850" y="520" font-family="Arial, sans-serif" font-size="8" fill="white">• ECS Agent</text>
+    <text x="850" y="535" font-family="Arial, sans-serif" font-size="8" fill="white">• S3 Gateway</text>
+  </g>
+  
+  <!-- ECS Cluster -->
+  <rect x="520" y="600" width="160" height="60" fill="#FF9800" stroke="#F57C00" stroke-width="2" rx="5"/>
+  <text x="600" y="625" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">ECS Cluster</text>
+  <text x="600" y="645" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">Container Insights</text>
+  
+  <!-- ECR Repository -->
+  <rect x="50" y="600" width="120" height="80" fill="#3F51B5" stroke="#303F9F" stroke-width="2" rx="5"/>
+  <text x="110" y="625" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">ECR</text>
+  <text x="110" y="645" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">Repository</text>
+  <text x="110" y="665" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle">Docker Images</text>
+  
+  <!-- CloudWatch Logs -->
+  <rect x="1030" y="600" width="120" height="80" fill="#4CAF50" stroke="#388E3C" stroke-width="2" rx="5"/>
+  <text x="1090" y="625" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">CloudWatch</text>
+  <text x="1090" y="645" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">Logs</text>
+  <text x="1090" y="665" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle">Log Groups</text>
+  
+  <!-- Security Groups Legend -->
+  <g id="security-groups">
+    <rect x="70" y="130" width="350" height="50" fill="#FFF9C4" stroke="#F57F17" stroke-width="1" rx="3"/>
+    <text x="80" y="150" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#8B4513">Security Groups:</text>
+    <text x="80" y="170" font-family="Arial, sans-serif" font-size="10" fill="#8B4513">ALB SG: 80,443 from 0.0.0.0/0 | ECS SG: 80 from ALB | VPC Endpoints SG: 443 from VPC</text>
+  </g>
+  
+  <!-- Traffic Flow Arrows -->
+  <!-- Internet to IGW -->
+  <path d="M 600 100 L 600 130" stroke="#FF4444" stroke-width="3" marker-end="url(#arrowhead)" fill="none"/>
+  
+  <!-- IGW to ALB -->
+  <path d="M 580 170 L 300 200" stroke="#FF4444" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  <path d="M 620 170 L 800 200" stroke="#FF4444" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  
+  <!-- ALB to ECS Tasks -->
+  <path d="M 280 320 L 270 420" stroke="#0066CC" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  <path d="M 780 320 L 770 420" stroke="#0066CC" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  
+  <!-- ECS to VPC Endpoints -->
+  <path d="M 320 450 L 340 450" stroke="#9966CC" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  <path d="M 820 450 L 840 450" stroke="#9966CC" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  
+  <!-- ECR to ECS -->
+  <path d="M 170 640 L 270 450" stroke="#6633CC" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  <path d="M 170 640 L 770 450" stroke="#6633CC" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  
+  <!-- ECS to CloudWatch -->
+  <path d="M 320 450 L 1030 640" stroke="#339966" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  <path d="M 820 450 L 1030 640" stroke="#339966" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+  
+  <!-- Internet Cloud -->
+  <ellipse cx="600" cy="60" rx="80" ry="25" fill="#E0E0E0" stroke="#999999" stroke-width="2"/>
+  <text x="600" y="67" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333" text-anchor="middle">Internet</text>
+  
+  <!-- Legend -->
+  <g id="legend">
+    <rect x="70" y="700" width="1080" height="50" fill="#F5F5F5" stroke="#CCCCCC" stroke-width="1" rx="3"/>
+    <text x="80" y="720" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Architecture Features:</text>
+    <text x="80" y="740" font-family="Arial, sans-serif" font-size="10" fill="#333">• Multi-AZ High Availability • Private ECS Tasks with VPC Endpoints • HTTPS/SSL Termination • Auto Scaling Ready • Container Insights • ECR Integration</text>
+  </g>
+</svg>
