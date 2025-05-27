@@ -29,8 +29,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
           
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
       - name: Run ShellCheck (SAST for shell scripts)
-        uses: azohra/shellcheck-action@v0.8.0
+        run: shellcheck ./deploy.sh
 
       - name: Run tfsec (SAST for Terraform)
         uses: aquasecurity/tfsec-action@v1.0.3
