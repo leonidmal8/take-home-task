@@ -118,7 +118,67 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
-# Security Group for VPC Endpoints
+# Security Groups
+# ALB Security Group
+resource "aws_security_group" "alb" {
+  name_prefix = "${var.app_name}-alb-"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Redirect HTTP to HTTPS
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "${var.app_name}-alb-sg"
+    Environment = var.environment
+  }
+}
+
+# ECS Security Group - FIXED
+resource "aws_security_group" "ecs" {
+  name_prefix = "${var.app_name}-ecs-"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
+  }
+
+  # Allow all outbound traffic (required for ECR image pulls)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "${var.app_name}-ecs-sg"
+    Environment = var.environment
+  }
+}
+
+# VPC Endpoints Security Group - FIXED
 resource "aws_security_group" "vpc_endpoints" {
   name_prefix = "${var.app_name}-vpc-endpoints-"
   vpc_id      = aws_vpc.main.id
@@ -128,6 +188,14 @@ resource "aws_security_group" "vpc_endpoints" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
+  # Allow inbound from ECS security group
+  ingress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ecs.id]
   }
 
   egress {
@@ -143,7 +211,7 @@ resource "aws_security_group" "vpc_endpoints" {
   }
 }
 
-# VPC Endpoints
+# VPC Endpoints - ENHANCED with missing endpoints
 resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id              = aws_vpc.main.id
   service_name        = "com.amazonaws.${var.aws_region}.ecr.api"
@@ -198,6 +266,51 @@ resource "aws_vpc_endpoint" "logs" {
   }
 }
 
+# NEW: ECS VPC endpoint
+resource "aws_vpc_endpoint" "ecs" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${var.aws_region}.ecs"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = aws_subnet.private[*].id
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
+  private_dns_enabled = true
+
+  tags = {
+    Name        = "${var.app_name}-ecs-endpoint"
+    Environment = var.environment
+  }
+}
+
+# NEW: ECS Agent VPC endpoint
+resource "aws_vpc_endpoint" "ecs_agent" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${var.aws_region}.ecs-agent"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = aws_subnet.private[*].id
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
+  private_dns_enabled = true
+
+  tags = {
+    Name        = "${var.app_name}-ecs-agent-endpoint"
+    Environment = var.environment
+  }
+}
+
+# NEW: ECS Telemetry VPC endpoint
+resource "aws_vpc_endpoint" "ecs_telemetry" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${var.aws_region}.ecs-telemetry"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = aws_subnet.private[*].id
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
+  private_dns_enabled = true
+
+  tags = {
+    Name        = "${var.app_name}-ecs-telemetry-endpoint"
+    Environment = var.environment
+  }
+}
+
 # ECR Repository
 resource "aws_ecr_repository" "main" {
   name                 = var.app_name
@@ -209,64 +322,6 @@ resource "aws_ecr_repository" "main" {
 
   tags = {
     Name        = "${var.app_name}-ecr"
-    Environment = var.environment
-  }
-}
-
-# Security Groups
-resource "aws_security_group" "alb" {
-  name_prefix = "${var.app_name}-alb-"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Redirect HTTP to HTTPS
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name        = "${var.app_name}-alb-sg"
-    Environment = var.environment
-  }
-}
-
-resource "aws_security_group" "ecs" {
-  name_prefix = "${var.app_name}-ecs-"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb.id]
-  }
-
-  # Allow access to VPC endpoints
-  egress {
-    from_port       = 443
-    to_port         = 443
-    protocol        = "tcp"
-    security_groups = [aws_security_group.vpc_endpoints.id]
-  }
-
-  tags = {
-    Name        = "${var.app_name}-ecs-sg"
     Environment = var.environment
   }
 }
@@ -358,6 +413,97 @@ resource "aws_ecs_cluster" "main" {
   }
 }
 
+# CloudWatch Log Group - MOVED before task definition
+resource "aws_cloudwatch_log_group" "main" {
+  name              = "/ecs/${var.app_name}"
+  retention_in_days = 7
+
+  tags = {
+    Name        = "${var.app_name}-logs"
+    Environment = var.environment
+  }
+}
+
+# IAM Roles and Policies
+resource "aws_iam_role" "ecs_execution" {
+  name = "${var.app_name}-ecs-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name        = "${var.app_name}-ecs-execution-role"
+    Environment = var.environment
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_execution" {
+  role       = aws_iam_role.ecs_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# Enhanced ECR policy for VPC endpoints
+resource "aws_iam_role_policy" "ecs_execution_ecr" {
+  name = "${var.app_name}-ecs-execution-ecr-policy"
+  role = aws_iam_role.ecs_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "${aws_cloudwatch_log_group.main.arn}:*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "ecs_task" {
+  name = "${var.app_name}-ecs-task-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name        = "${var.app_name}-ecs-task-role"
+    Environment = var.environment
+  }
+}
+
 # ECS Task Definition
 resource "aws_ecs_task_definition" "main" {
   family                   = "${var.app_name}-task"
@@ -420,89 +566,6 @@ resource "aws_ecs_service" "main" {
 
   tags = {
     Name        = "${var.app_name}-service"
-    Environment = var.environment
-  }
-}
-
-# IAM Roles and Policies
-resource "aws_iam_role" "ecs_execution" {
-  name = "${var.app_name}-ecs-execution-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
-
-  tags = {
-    Name        = "${var.app_name}-ecs-execution-role"
-    Environment = var.environment
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_execution" {
-  role       = aws_iam_role.ecs_execution.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-# Additional policy for ECR access via VPC endpoints
-resource "aws_iam_role_policy" "ecs_execution_ecr" {
-  name = "${var.app_name}-ecs-execution-ecr-policy"
-  role = aws_iam_role.ecs_execution.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ecr:GetAuthorizationToken",
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role" "ecs_task" {
-  name = "${var.app_name}-ecs-task-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
-
-  tags = {
-    Name        = "${var.app_name}-ecs-task-role"
-    Environment = var.environment
-  }
-}
-
-# CloudWatch Log Group
-resource "aws_cloudwatch_log_group" "main" {
-  name              = "/ecs/${var.app_name}"
-  retention_in_days = 7
-
-  tags = {
-    Name        = "${var.app_name}-logs"
     Environment = var.environment
   }
 }
