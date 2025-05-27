@@ -37,7 +37,6 @@ terraform apply -auto-approve
 
 # Get outputs from Terraform
 ECR_URL=$(terraform output -raw ecr_repository_url)
-AWS_REGION=$(terraform output -raw aws_region || echo "us-west-2")
 CLUSTER_NAME=$(terraform output -raw ecs_cluster_name)
 SERVICE_NAME=$(terraform output -raw ecs_service_name)
 APP_URL=$(terraform output -raw application_url)
