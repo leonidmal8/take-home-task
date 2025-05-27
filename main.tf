@@ -152,7 +152,7 @@ resource "aws_security_group" "alb" {
   }
 }
 
-# ECS Security Group - FIXED
+# ECS Security Group
 resource "aws_security_group" "ecs" {
   name_prefix = "${var.app_name}-ecs-"
   vpc_id      = aws_vpc.main.id
@@ -178,7 +178,7 @@ resource "aws_security_group" "ecs" {
   }
 }
 
-# VPC Endpoints Security Group - FIXED
+# VPC Endpoints Security Group
 resource "aws_security_group" "vpc_endpoints" {
   name_prefix = "${var.app_name}-vpc-endpoints-"
   vpc_id      = aws_vpc.main.id
@@ -211,7 +211,7 @@ resource "aws_security_group" "vpc_endpoints" {
   }
 }
 
-# VPC Endpoints - ENHANCED with missing endpoints
+# VPC Endpoints
 resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id              = aws_vpc.main.id
   service_name        = "com.amazonaws.${var.aws_region}.ecr.api"
@@ -266,7 +266,7 @@ resource "aws_vpc_endpoint" "logs" {
   }
 }
 
-# NEW: ECS VPC endpoint
+# ECS VPC endpoint
 resource "aws_vpc_endpoint" "ecs" {
   vpc_id              = aws_vpc.main.id
   service_name        = "com.amazonaws.${var.aws_region}.ecs"
@@ -281,7 +281,7 @@ resource "aws_vpc_endpoint" "ecs" {
   }
 }
 
-# NEW: ECS Agent VPC endpoint
+# ECS Agent VPC endpoint
 resource "aws_vpc_endpoint" "ecs_agent" {
   vpc_id              = aws_vpc.main.id
   service_name        = "com.amazonaws.${var.aws_region}.ecs-agent"
@@ -296,7 +296,7 @@ resource "aws_vpc_endpoint" "ecs_agent" {
   }
 }
 
-# NEW: ECS Telemetry VPC endpoint
+# ECS Telemetry VPC endpoint
 resource "aws_vpc_endpoint" "ecs_telemetry" {
   vpc_id              = aws_vpc.main.id
   service_name        = "com.amazonaws.${var.aws_region}.ecs-telemetry"
@@ -413,7 +413,7 @@ resource "aws_ecs_cluster" "main" {
   }
 }
 
-# CloudWatch Log Group - MOVED before task definition
+# CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "main" {
   name              = "/ecs/${var.app_name}"
   retention_in_days = 7
