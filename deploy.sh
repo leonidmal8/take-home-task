@@ -32,14 +32,7 @@ sed -i 's/^environment *= *".*"/environment = "'"$APP_ENV"'"/' terraform.tfvars
 sed -i 's/^app_name *= *".*"/app_name = "'"$APP_NAME"'"/' terraform.tfvars
 terraform init
 terraform plan
-read -p "Do you want to apply these changes? (y/N): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    terraform apply -auto-approve
-else
-    echo "❌ Deployment cancelled"
-    exit 1
-fi
+terraform apply -auto-approve
 
 # Get outputs from Terraform
 ECR_URL=$(terraform output -raw ecr_repository_url)
