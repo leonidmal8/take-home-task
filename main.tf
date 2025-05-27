@@ -50,7 +50,7 @@ resource "aws_internet_gateway" "main" {
 
 # Public Subnets (for ALB only)
 resource "aws_subnet" "public" {
-  count = 1
+  count = 2
 
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.${count.index + 1}.0/24"
@@ -66,7 +66,7 @@ resource "aws_subnet" "public" {
 
 # Private Subnets (for ECS tasks)
 resource "aws_subnet" "private" {
-  count = 1
+  count = 2
 
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.${count.index + 10}.0/24"
@@ -547,7 +547,7 @@ resource "aws_ecs_service" "main" {
   name            = "${var.app_name}-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.main.arn
-  desired_count   = 1
+  desired_count   = 2
   launch_type     = "FARGATE"
 
   network_configuration {
