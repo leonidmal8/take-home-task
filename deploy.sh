@@ -27,6 +27,9 @@ echo "✅ Prerequisites check passed"
 
 # Step 1: Deploy infrastructure
 echo "📦 Deploying infrastructure with Terraform..."
+sed -i 's/^aws_region *= *".*"/aws_region = "'"$AWS_REGION"'"/' terraform.tfvars
+sed -i 's/^environment *= *".*"/environment = "'"$APP_ENV"'"/' terraform.tfvars
+sed -i 's/^app_name *= *".*"/app_name = "'"$APP_NAME"'"/' terraform.tfvars
 terraform init
 terraform plan
 read -p "Do you want to apply these changes? (y/N): " -n 1 -r
