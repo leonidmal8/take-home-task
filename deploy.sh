@@ -30,7 +30,7 @@ echo "📦 Deploying infrastructure with Terraform..."
 sed -i 's/^aws_region *= *".*"/aws_region = "'"$AWS_REGION"'"/' terraform.tfvars
 sed -i 's/^environment *= *".*"/environment = "'"$APP_ENV"'"/' terraform.tfvars
 sed -i 's/^app_name *= *".*"/app_name = "'"$APP_NAME"'"/' terraform.tfvars
-sed -i 's/^certificate_arn *= *".*"/certificate_arn = "'"$CERT_ARN"'"/' terraform.tfvars
+sed -i "s|^certificate_arn *= *\".*\"|certificate_arn = \"${CERT_ARN}\"|" terraform.tfvars
 
 terraform init
 terraform plan
