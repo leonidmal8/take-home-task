@@ -140,10 +140,11 @@ resource "aws_security_group" "alb" {
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ecs.id]
+    description     = "Allow traffic to ECS tasks"
   }
 
   tags = {
@@ -164,12 +165,36 @@ resource "aws_security_group" "ecs" {
     security_groups = [aws_security_group.alb.id]
   }
 
-  # Allow all outbound traffic (required for ECR image pulls)
+   egress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.vpc_endpoints.id]
+    description     = "Allow HTTPS to VPC endpoints"
+  }
+
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+    description = "Allow DNS resolution within VPC"
+  }
+
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+    description = "Allow DNS resolution within VPC"
+  }
+
   egress {
     from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+    description = "Allow communication within VPC"
   }
 
   tags = {
@@ -196,13 +221,6 @@ resource "aws_security_group" "vpc_endpoints" {
     to_port         = 443
     protocol        = "tcp"
     security_groups = [aws_security_group.ecs.id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
