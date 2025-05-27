@@ -26,12 +26,14 @@ fi
 echo "✅ Prerequisites check passed"
 
 # Step 1: Deploy infrastructure
-echo "📦 Deploying infrastructure with Terraform..."
+
+echo "🔄 Updating environment variables..."
 sed -i 's/^aws_region *= *".*"/aws_region = "'"$AWS_REGION"'"/' terraform.tfvars
 sed -i 's/^environment *= *".*"/environment = "'"$APP_ENV"'"/' terraform.tfvars
 sed -i 's/^app_name *= *".*"/app_name = "'"$APP_NAME"'"/' terraform.tfvars
 sed -i "s|^certificate_arn *= *\".*\"|certificate_arn = \"${CERT_ARN}\"|" terraform.tfvars
 
+echo "📦 Deploying infrastructure with Terraform..."
 terraform init
 terraform plan
 # terraform destroy -auto-approve
@@ -88,14 +90,3 @@ echo "   • Container Image: ✅ Built and pushed to ECR"
 echo "   • ECS Service: ✅ Updated and running"
 echo ""
 echo "🌐 Application URL: $APP_URL"
-echo ""
-echo "📝 Next Steps:"
-echo "   1. Wait 2-3 minutes for the application to fully start"
-echo "   2. Access your application at: $APP_URL"
-echo "   3. Monitor logs: aws logs tail /ecs/internal-webapp --follow"
-echo ""
-echo "💰 Cost Optimization:"
-echo "   • No NAT Gateway costs (saves ~$90/month)"
-echo "   • VPC Endpoints: ~$10-15/month"
-echo "   • Maximum security with minimal cost!"
-echo ""
