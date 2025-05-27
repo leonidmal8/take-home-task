@@ -1,4 +1,3 @@
-tfvars # Provider configuration
 terraform {
   required_providers {
     aws = {
