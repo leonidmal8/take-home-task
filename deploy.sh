@@ -34,8 +34,8 @@ sed -i "s|^certificate_arn *= *\".*\"|certificate_arn = \"${CERT_ARN}\"|" terraf
 
 terraform init
 terraform plan
-terraform destroy -auto-approve
-# terraform apply -auto-approve
+# terraform destroy -auto-approve
+terraform apply -auto-approve
 
 # Get outputs from Terraform
 ECR_URL=$(terraform output -raw ecr_repository_url)
