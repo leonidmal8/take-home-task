@@ -8,7 +8,7 @@ aws_region = "us-east-1"
 environment = "dev"
 
 # Application name (will be used for resource naming)
-app_name = "home-task-webapp"
+app_name = "home-task"
 
 # Docker image tag to deploy
 image_tag = "latest"

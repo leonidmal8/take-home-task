@@ -6,6 +6,13 @@ terraform {
     }
   }
   required_version = ">= 1.0"
+  backend "s3" {
+    bucket         = "hometaskterraform"
+    key            = "current-home-task/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-locks"       # Optional but recommended
+    encrypt        = true
+  }
 }
 
 provider "aws" {
