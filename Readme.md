@@ -20,7 +20,7 @@ This repository contains a small internal web application, designed for secure a
 
 ## Infrastructure stack deploy and destroy
 
-To follow the immutable infrastructure principle, the entire Terraform stack is updated every time the deployment pipeline runs, or created if it doesn’t exist (the corresponding stack state is stored in S3 with locking handled via DynamoDB).
+To follow the *immutable infrastructure* principle, the entire Terraform stack is updated every time the deployment pipeline runs, or created if it doesn’t exist (the corresponding stack state is stored in S3 with locking handled via DynamoDB).
 Credentials for connecting to AWS and all necessary Terraform variables are stored in the secrets and variables of the GitHub Actions develop environment.
 If you need to delete the existing infrastructure, simply uncomment # terraform destroy -auto-approve in deploy.sh, comment out the following terraform apply -auto-approve, and push the changes.
 
