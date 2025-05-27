@@ -32,8 +32,8 @@ sed -i 's/^environment *= *".*"/environment = "'"$APP_ENV"'"/' terraform.tfvars
 sed -i 's/^app_name *= *".*"/app_name = "'"$APP_NAME"'"/' terraform.tfvars
 terraform init
 terraform plan
-terraform destroy -auto-approve
-# terraform apply -auto-approve
+# terraform destroy -auto-approve
+terraform apply -auto-approve
 
 # Get outputs from Terraform
 ECR_URL=$(terraform output -raw ecr_repository_url)
@@ -47,23 +47,6 @@ echo "📋 ECR Repository: $ECR_URL"
 
 # Step 2: Build and push Docker image
 echo "🐳 Building and pushing Docker image..."
-
-# Check if Dockerfile exists
-if [ ! -f "Dockerfile" ]; then
-    echo "⚠️  No Dockerfile found. Creating example Dockerfile..."
-    cat > Dockerfile << 'EOF'
-FROM nginx:alpine
-RUN echo '<!DOCTYPE html>
-<html><head><title>Internal App</title></head>
-<body style="font-family:Arial;padding:50px;text-align:center;">
-<h1>🔒 Secure Internal Web Application</h1>
-<p>✅ Running successfully on ECS Fargate!</p>
-<p><small>Private ECR + VPC Endpoints Architecture</small></p>
-</body></html>' > /usr/share/nginx/html/index.html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-EOF
-fi
 
 # Login to ECR
 echo "🔐 Logging into ECR..."
