@@ -39,4 +39,5 @@ jobs:
           AWS_REGION: ${{ vars.AWS_REGION }}
           APP_ENV: ${{ vars.APP_ENV }}
           APP_NAME: ${{ vars.APP_NAME }}
+          CERT_ARN: ${{ secrets.CERT_ARN }}
         run: ./deploy.sh
