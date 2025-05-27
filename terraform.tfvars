@@ -15,4 +15,4 @@ image_tag = "latest"
 
 # SSL certificate ARN from AWS Certificate Manager
 # Replace with your actual certificate ARN
-certificate_arn = "arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+certificate_arn = "arn:aws:acm:us-east-1:578449232691:certificate/cde61e76-1d6f-4107-91bf-58a9be0cb2dc"
