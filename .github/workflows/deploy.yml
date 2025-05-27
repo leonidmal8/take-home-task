@@ -9,7 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production
+    environment: develop
     steps:
       - name: Checkout develop branch
         uses: actions/checkout@v4
