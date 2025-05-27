@@ -14,7 +14,7 @@ variable "environment" {
 variable "app_name" {
   description = "Name of the application"
   type        = string
-  default     = "internal-webapp"
+  default     = "home-task-webapp"
 }
 
 variable "image_tag" {
