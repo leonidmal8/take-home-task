@@ -2,13 +2,13 @@
 # Copy this file to terraform.tfvars and update with your actual values
 
 # AWS region where you want to deploy
-aws_region = 'us-east-1'
+aws_region = "us-east-1" 
 
 # Environment name (dev, staging, prod)
-environment = 'dev'
+environment = "dev"
 
 # Application name (will be used for resource naming)
-app_name = 'home-task-webapp'
+app_name = "home-task-webapp"
 
 # Docker image tag to deploy
 image_tag = "latest"
