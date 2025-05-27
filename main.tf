@@ -118,12 +118,33 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
-# Security Groups - FIXED CIRCULAR DEPENDENCY AND IMPROVED SECURITY
-
-# Step 1: Create security groups without rules first
+# Security Groups
+# ALB Security Group
 resource "aws_security_group" "alb" {
   name_prefix = "${var.app_name}-alb-"
   vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Redirect HTTP to HTTPS
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
 
   tags = {
     Name        = "${var.app_name}-alb-sg"
@@ -131,9 +152,25 @@ resource "aws_security_group" "alb" {
   }
 }
 
+# ECS Security Group - FIXED
 resource "aws_security_group" "ecs" {
   name_prefix = "${var.app_name}-ecs-"
   vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
+  }
+
+  # Allow all outbound traffic (required for ECR image pulls)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = {
     Name        = "${var.app_name}-ecs-sg"
@@ -141,121 +178,37 @@ resource "aws_security_group" "ecs" {
   }
 }
 
+# VPC Endpoints Security Group - FIXED
 resource "aws_security_group" "vpc_endpoints" {
   name_prefix = "${var.app_name}-vpc-endpoints-"
   vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
+  # Allow inbound from ECS security group
+  ingress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ecs.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = {
     Name        = "${var.app_name}-vpc-endpoints-sg"
     Environment = var.environment
   }
-}
-
-# Step 2: Create security group rules separately to avoid circular dependencies
-
-# ALB Ingress Rules
-resource "aws_security_group_rule" "alb_ingress_https" {
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.alb.id
-  description       = "Allow HTTPS from internet"
-}
-
-resource "aws_security_group_rule" "alb_ingress_http" {
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.alb.id
-  description       = "Allow HTTP from internet for redirect"
-}
-
-# ALB Egress Rules
-resource "aws_security_group_rule" "alb_egress_to_ecs" {
-  type                     = "egress"
-  from_port                = 80
-  to_port                  = 80
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.ecs.id
-  security_group_id        = aws_security_group.alb.id
-  description              = "Allow traffic to ECS tasks"
-}
-
-# ECS Ingress Rules
-resource "aws_security_group_rule" "ecs_ingress_from_alb" {
-  type                     = "ingress"
-  from_port                = 80
-  to_port                  = 80
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.alb.id
-  security_group_id        = aws_security_group.ecs.id
-  description              = "Allow traffic from ALB"
-}
-
-# ECS Egress Rules
-resource "aws_security_group_rule" "ecs_egress_to_vpc_endpoints" {
-  type                     = "egress"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.vpc_endpoints.id
-  security_group_id        = aws_security_group.ecs.id
-  description              = "Allow HTTPS to VPC endpoints"
-}
-
-resource "aws_security_group_rule" "ecs_egress_dns_udp" {
-  type              = "egress"
-  from_port         = 53
-  to_port           = 53
-  protocol          = "udp"
-  cidr_blocks       = [aws_vpc.main.cidr_block]
-  security_group_id = aws_security_group.ecs.id
-  description       = "Allow DNS resolution within VPC"
-}
-
-resource "aws_security_group_rule" "ecs_egress_dns_tcp" {
-  type              = "egress"
-  from_port         = 53
-  to_port           = 53
-  protocol          = "tcp"
-  cidr_blocks       = [aws_vpc.main.cidr_block]
-  security_group_id = aws_security_group.ecs.id
-  description       = "Allow DNS resolution within VPC"
-}
-
-resource "aws_security_group_rule" "ecs_egress_vpc_communication" {
-  type              = "egress"
-  from_port         = 0
-  to_port           = 65535
-  protocol          = "tcp"
-  cidr_blocks       = [aws_vpc.main.cidr_block]
-  security_group_id = aws_security_group.ecs.id
-  description       = "Allow communication within VPC"
-}
-
-# VPC Endpoints Ingress Rules
-resource "aws_security_group_rule" "vpc_endpoints_ingress_from_vpc" {
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = [aws_vpc.main.cidr_block]
-  security_group_id = aws_security_group.vpc_endpoints.id
-  description       = "Allow HTTPS from VPC"
-}
-
-resource "aws_security_group_rule" "vpc_endpoints_ingress_from_ecs" {
-  type                     = "ingress"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.ecs.id
-  security_group_id        = aws_security_group.vpc_endpoints.id
-  description              = "Allow HTTPS from ECS tasks"
 }
 
 # VPC Endpoints - ENHANCED with missing endpoints
