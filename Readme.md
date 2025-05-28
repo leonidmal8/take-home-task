@@ -11,6 +11,8 @@ The default branch is **develop**, and it is currently being deployed to AWS as 
 - **ALB**: Application is only accessible securely over HTTPS
 - **IAM**: Uses least-privilege IAM roles for tasks and execution
 
+  Please review the architecture diagram - `./infrastructure-diagram.svg`
+
 
 ## Security Features
 
