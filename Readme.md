@@ -59,7 +59,7 @@ There is also an option to restrict ingress traffic in the security group based 
 
 ## Cost optimization options
 
-We can remove logs, saving around $7.30 per month.
+We can remove logs, saving around $10.30 per month.
 
 If the number of users is small and the application is not mission-critical,
 we can place both ECR and ECS in public, restrict access by IP, and integrate Cognito as described above.
