@@ -30,10 +30,10 @@ If you need to delete the existing infrastructure, simply uncomment `# terraform
 |-----------------|-------------------|-------------------|
 | **Compute** | ECS Fargate (0.25 vCPU, 512MB memory) | $9.01 |
 | **Load Balancing** | Application Load Balancer + Data Processing | $17.00 |
-| **Networking** | VPC Endpoints (5 Interface + 1 Gateway) | $38.50 |
+| **Networking** | VPC Endpoints (5 Interface + 1 Gateway) | $43.80 |
 | **Container Registry** | ECR Storage (~10GB) | $1.00 |
 | **Monitoring** | CloudWatch Logs + Container Insights | $3.00 |
 | **Data Transfer** | Estimated usage | $2.00 |
 | **SSL Certificate** | AWS Certificate Manager | $0.00 (Free) |
-| | **Total Estimated Monthly Cost** | **$70.51** |
+| | **Total Estimated Monthly Cost** | **$75.81** |
 
