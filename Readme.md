@@ -1,7 +1,7 @@
 # Take Home Task - Internal Tool
 
 This repository contains a small internal web application, designed for secure and cost-effective deployment using AWS infrastructure and containers.
-The default branch is **develop**, and it is currently being deployed to AWS as the live service at: **`https://hometask.leonidmaliuk.com/`**
+The default branch is **develop**, and it is currently being deployed to AWS as the live service at:  **[hometask.leonidmaliuk.com](https://hometask.leonidmaliuk.com/)**
 
 ## Architecture Overview
 
