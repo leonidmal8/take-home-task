@@ -24,3 +24,16 @@ To follow the **immutable infrastructure** principle, the entire Terraform stack
 Credentials for connecting to AWS and all necessary Terraform variables are stored in the **secrets and variables** of the **GitHub Actions** develop environment.
 If you need to delete the existing infrastructure, simply uncomment `# terraform destroy -auto-approve in deploy.sh`, comment out the following `terraform apply -auto-approve`, and push the changes.
 
+## Estimated Monthly Costs
+
+| Service Category | Component Details | Monthly Cost (USD) |
+|-----------------|-------------------|-------------------|
+| **Compute** | ECS Fargate (0.25 vCPU, 512MB memory) | $9.01 |
+| **Load Balancing** | Application Load Balancer + Data Processing | $17.00 |
+| **Networking** | VPC Endpoints (5 Interface + 1 Gateway) | $38.50 |
+| **Container Registry** | ECR Storage (~10GB) | $1.00 |
+| **Monitoring** | CloudWatch Logs + Container Insights | $3.00 |
+| **Data Transfer** | Estimated usage | $2.00 |
+| **SSL Certificate** | AWS Certificate Manager | $0.00 (Free) |
+| | **Total Estimated Monthly Cost** | **$70.51** |
+
